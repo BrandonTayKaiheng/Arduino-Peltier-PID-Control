@@ -18,7 +18,7 @@ double output;
 double input;
 double setpoint;
 
-// PID Controller variables
+// PID Controller variables (Gains K tuned experimentally)
 double kp = 3.8;  // Proportional gain
 double ki = 0.2;  // Integral gain
 double kd = 0;  // Derivative gain
@@ -30,7 +30,7 @@ double control_volts;
 // Excel Data Streamer variables
 unsigned long duration = 0;
 unsigned long PreviousTime = 0;
-const int RefreshInterval = 1000;
+const int RefreshInterval = 1000;  
 
 
 void setup() {
@@ -61,7 +61,8 @@ double read_temp() {
 
 }
 
-// Implementation of PID controller
+// Implementation of PID feedback controller to calculate the duty cycle of the Pulse Width Modulation
+// signal used to control the Peltier output. 
 double PID(double temp_sensed) {
 
   current_time = millis(); // Return time passed since arduino started running
@@ -77,14 +78,14 @@ double PID(double temp_sensed) {
   prev_time = current_time;
 
   if (out > 5) {
-    out = 5;
+    out = 5;  
   }
 
   if (out < 0) {
     out = 0;
   }
 
-  return (out / 5) * 255;
+  return (out / 5) * 255; 
 
 }
 
@@ -124,9 +125,9 @@ void OutgoingSerial() {
 // Main loop
 void loop() {
 
-  input = read_temp(); //Read current temperature
-  output = PID(input);    //Calculate PID
-  analogWrite(PELTIER, output); //PWM signal
+  input = read_temp(); // Read current temperature
+  output = PID(input);    // Calculate PID
+  analogWrite(PELTIER, output); // PWM signal to control Peltier
   output = output / 100;
   control_volts = (output/2.55)*5;
   OutgoingSerial();
