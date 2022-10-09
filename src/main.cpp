@@ -11,8 +11,8 @@ float sensor_value_2;  // Sensor detecting ambient temperature
 float sensor_value;
 float volt1;
 float volt2;
-float T1;  // Temperature of Sensor
-float T2;  // Temperature of Ambient
+float T1;  // Peltier Temperature
+float T2;  // Ambient Temperature
 
 double output;
 double input;
@@ -27,7 +27,7 @@ unsigned long prev_time, current_time;
 double total_error, prev_error, rate_error, error;
 double control_volts;
 
-// Data Streamer variables
+// Excel Data Streamer variables
 unsigned long duration = 0;
 unsigned long PreviousTime = 0;
 const int RefreshInterval = 1000;
@@ -39,19 +39,23 @@ void setup() {
   Serial.begin( 9600);
   //Serial.println('Initializing...');
   pinMode(PELTIER, OUTPUT);
-  analogReference(5);    // Analog reference 0 to 5V
+  analogReference(5);    // Setting a 5V analog reference
 
 }
 
-// This function will compute and return the temperature difference to be compared against the setpoint value
+// Compute and return the temperature difference to be compared against the setpoint value
 double read_temp() {
 
-  sensor_value_1 = analogRead(sensorPin1);     // Returns number of bytes. 10 bit ADC, 2^10 = 1024
+  sensor_value_1 = analogRead(sensorPin1);    
   sensor_value_2 = analogRead(sensorPin2);
-  volt1 = (float(sensor_value_1) / 1024) * 5;
+  
+  // Convert readings from 10 bit ADC to voltage
+  volt1 = (float(sensor_value_1) / 1024) * 5; 
   volt2 = (float(sensor_value_2) / 1024) * 5;
-  T1 = (volt1 - 0.4017) / 0.0204;   // (Vin - V0)/Tc
-  T2 = (volt2 - 0.4004) / 0.0204;
+  
+  // Convert voltage into temperature (based on sensor calibration)
+  T1 = (volt1 - 0.40) / 0.0204;   // (Vin - V0)/Tc 
+  T2 = (volt2 - 0.40) / 0.0204;
 
   return T1;
 
@@ -60,12 +64,12 @@ double read_temp() {
 // Implementation of PID controller
 double PID(double temp_sensed) {
 
-  current_time = millis(); //Return time passed since arduino started running
+  current_time = millis(); // Return time passed since arduino started running
   elapsed_time = current_time - prev_time;
 
-  error = temp_sensed - setpoint; //Proportional Control
-  total_error += error;  //Integral Control
-  rate_error = error - prev_error; //Derivative Control
+  error = temp_sensed - setpoint; // Proportional Control
+  total_error += error;  // Integral Control
+  rate_error = error - prev_error; // Derivative Control
 
   double out = kp * error + ki * (elapsed_time * total_error) + kd*(rate_error/elapsed_time);
 
@@ -117,6 +121,7 @@ void OutgoingSerial() {
 
 }
 
+// Main loop
 void loop() {
 
   input = read_temp(); //Read current temperature
