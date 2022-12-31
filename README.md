@@ -11,7 +11,8 @@ Code is found in `main` folder
 4. Heat Sink x1
 5. Arduino Uno x1 (or equivalent microcontroller)
 6. Analog Temperature Sensor x2 
-7. Power source
+7. Resistor x1 (< 1 kOhm)
+8. Power source
 (See `Wiring Schematic.png` for connection)
 
 ![image](https://user-images.githubusercontent.com/115394445/210139803-93fbe510-d176-4115-a997-895597c888ec.png)
