@@ -12,4 +12,7 @@ The classic Proportional-Integral_Differential (PID) Control Algorithm is implem
 7. Power source
 (See schematic for connection)
 
-## 
+## Control System Architecture
+* To implment PID control digitally, the standard PID equation in Time Domain is discretized (See Equation.png)
+* The error term is e(t) is the calculated difference between the Peltier and the Ambient temperature sampled
+* The sensor provides negative feedback to complete the control loop (See BlockDiagram.png)
